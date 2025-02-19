@@ -123,6 +123,36 @@ root@172.17.0.2: Permission denied (publickey). # SSH настроен прав�
 [root@Zero Infrastructure-Automation]# cd ansible
 [root@Zero ansible]# mkdir inventory
 [root@Zero ansible]# nano inventory/inventory.yml
+# Проверяем доступность хостов с помощью Ansible
+[root@Zero Infrastructure-Automation]# ansible all -i ansible/inventory/inventory.yml -m ping
+172.19.0.2 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+172.19.0.3 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+172.19.0.4 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+172.17.0.2 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
 ``` 
 
 #### main.tf
@@ -300,24 +330,13 @@ resource "docker_container" "db" {
 
 #### inventory.yml 
 ```bash  
-all:
-  children:
-    front:
-      hosts:
-        172.17.0.2:  # Публичный IP контейнера front
-          ansible_user: root
-          ansible_ssh_private_key_file: ../../terraform/keys/id_rsa_terraform
-        172.19.0.4:  # Изолированный IP контейнера front
-          ansible_user: root
-          ansible_ssh_private_key_file: ../../terraform/keys/id_rsa_terraform
-    back:
-      hosts:
-        172.19.0.3:  # IP контейнера back
-          ansible_user: root
-          ansible_ssh_private_key_file: ../../terraform/keys/id_rsa_terraform
-    db:
-      hosts:
-        172.19.0.2:  # IP контейнера db
-          ansible_user: root
-          ansible_ssh_private_key_file: ../../terraform/keys/id_rsa_terraform
+[front]
+172.17.0.2 ansible_ssh_private_key_file=/root/Infrastructure-Automation/terraform/keys/id_rsa_terraform
+172.19.0.4 ansible_ssh_private_key_file=/root/Infrastructure-Automation/terraform/keys/id_rsa_terraform
+
+[back]
+172.19.0.3 ansible_ssh_private_key_file=/root/Infrastructure-Automation/terraform/keys/id_rsa_terraform
+
+[db]
+172.19.0.2 ansible_ssh_private_key_file=/root/Infrastructure-Automation/terraform/keys/id_rsa_terraform
 ```          
