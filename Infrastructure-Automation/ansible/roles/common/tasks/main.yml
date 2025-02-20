@@ -1,0 +1,29 @@
+---
+- name: Install common packages # Устанавливаем общие пакеты 
+  apt:
+    name: "{{ item }}"  # Устанавливаемый пакет
+    state: present      # Убедиться, что пакет установлен
+    update_cache: yes   # Обновить кеш пакетов перед установкой
+  loop:
+    - apt-utils        # Утилиты для работы с пакетами для Ubuntu
+    - chrony           # Пакет для синхронизации времени
+#   - yum-utils        # Утилиты для работы с пакетами (на CentOS/RHEL)
+    - apt-utils        # Утилиты для работы с пакетами для Ubuntu 
+    - mc               # Файловый менеджер Midnight Commander
+    - curl             # Утилита для работы с HTTP-запросами
+    - htop             # Мониторинг ресурсов системы
+    - atop             # Расширенный мониторинг системы
+
+- name: Remove unwanted packages # Удаляем ненужные пакеты 
+  apt:
+    name: "{{ item }}"  # Пакет для удаления
+    state: absent       # Убедиться, что пакет удален
+  loop:
+    - apparmor         # Система безопасности (если используется на Debian/Ubuntu)
+    - cockpit          # Веб-интерфейс для управления сервером
+
+- name: Ensure chrony is running and enabled # Проверяем, что chrony запущен и включен
+  service:
+    name: chrony       # Название службы
+    state: started     # Убедиться, что служба запущена
+    enabled: yes       # Убедиться, что служба включена для автозапуска
